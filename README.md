@@ -14,13 +14,13 @@ If you want to change the default-values, you can do this by calling the library
 
   // with the call the global instance is created
   DB({
-    path: './data/sqlite3.db', // default is '
-    memory: false,
-    readonly: false,
-    fileMustExist: false,
-    WAL: true, // automaticly enable 'PRAGMA journal_mode = WAL'
-    migrate: {  // disable completly by setting `migrate: false`
-      force: false, // 'last' to automaticlly reapply the last migration-file
+    path: './data/sqlite3.db', // this is the default
+    memory: false, // create a db only in memory
+    readonly: false, // read only
+    fileMustExist: false, // throw error if database not exists
+    WAL: true, // automatically enable 'PRAGMA journal_mode = WAL'
+    migrate: {  // disable completely by setting `migrate: false`
+      force: false, // 'last' to automatically reapply the last migration-file
       table: 'migration' // name of the database table that is used to keep track
       migrationsPath: './migrations' // path of the migration-files
     }
@@ -47,7 +47,7 @@ let allUsers = DB().query('SELECT * FROM users');
 let row = DB().queryFirstRow('SELECT * FROM users WHERE id=?', userId);
 // shorthand for db.prepare('SELECT * FROM users WHERE id=?').pluck(true).get(userId); 
 let email = DB().queryFirstCell('SELECT email FROM users WHERE id=?', userId);
-// shorthand for db.prepare('SELECT * FROM users WHERE id=?').all(userId).map((e)=>e.email); 
+// shorthand for db.prepare('SELECT * FROM users').all().map((e)=>e.email); 
 let emails = DB().queryColumn('email', 'SELECT email FROM users');
 // shorthand for db.prepare('SELECT * FROM users').all().reduce((o, e) => {o[e.lastName] = e.email; return o;}, {});
 let emailsByLastName = DB().queryKeyAndColumn('lastName', 'email', 'SELECT lastName, name FROM users');
@@ -138,7 +138,7 @@ CREATE INDEX Post_ix_categoryId ON Post (categoryId);
 DROP INDEX Post_ix_categoryId;
 ```
 
-The files need to be numbered. They are automaticly executed before the first use of the database.
+The files need to be numbered. They are automatically executed before the first use of the database.
 
 **NOTE**: For the development environment, while working on the database schema, you may want to set
 `force: 'last'` (default `false`) that will force the migration API to rollback and re-apply the latest migration over again each time when Node.js app launches. See "Global Instance".
