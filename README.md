@@ -55,7 +55,7 @@ let emailsByLastName = DB().queryKeyAndColumn('lastName', 'email', 'SELECT lastN
 
 ## Insert, Update and Replace
 
-There are shorthands for `update`, `insert` and `replace`. There are intended to make programming of CRUD-Rest-API-functions easier. With a `blacklist` or a `whitelist` it's even possible to send a request's query (or body) directly into the database.
+There are shorthands for `update`, `insert` and `replace`. They are intended to make programming of CRUD-Rest-API-functions easier. With a `blacklist` or a `whitelist` it's even possible to send a request's query (or body) directly into the database.
 
 ### Update
 ```js
@@ -110,7 +110,9 @@ DB().replaceWithBlackList('users', req.body, ['id', 'email']) // or insertWithBl
 
 ## Migrations
 
-The migration in this library mimics the migration system of the excelent library [sqlite](https://www.npmjs.com/package/sqlite) by Kriasoft. You create a `migrations`-directory in your root and create `sql`-files that are seperated in a up- and a down-part:
+The migration in this library mimics the migration system of the excellent [sqlite](https://www.npmjs.com/package/sqlite) by Kriasoft. 
+
+To use this feature you have to create a `migrations`-directory in your root. Inside you create `sql`-files that are seperated in a up- and a down-part:
 
 ##### `migrations/001-initial-schema.sql`
 
