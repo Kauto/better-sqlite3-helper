@@ -55,7 +55,7 @@ let emailsByLastName = DB().queryKeyAndColumn('lastName', 'email', 'SELECT lastN
 
 ## Insert, Update and Replace
 
-There are shorthands for `update`, `insert` and `replace`. There are intended to make programming of CURD-Rest-API-functions more easy. With a `blacklist` or a `whitelist` it's even possible to directly give a request's query or body into the database.
+There are shorthands for `update`, `insert` and `replace`. There are intended to make programming of CRUD-Rest-API-functions easier. With a `blacklist` or a `whitelist` it's even possible to send a request's query (or body) directly into the database.
 
 ### Update
 ```js
