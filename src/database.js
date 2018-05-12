@@ -99,6 +99,7 @@ DB.prototype.defaultSafeIntegers = function (toggleState) {
  *
  * @param {Object} query the SQL-Query that should be run. Can contain placeholders for bind parameters.
  * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
+ * @returns {object}
  */
 DB.prototype.run = function (query, ...bindParameters) {
   return this.connection().prepare(query).run(...bindParameters)
@@ -110,6 +111,7 @@ DB.prototype.run = function (query, ...bindParameters) {
  *
  * @param {Object} query the SQL-Query that should be run. Can contain placeholders for bind parameters.
  * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
+ * @returns {array}
  */
 DB.prototype.query = function (query, ...bindParameters) {
   return this.connection().prepare(query).all(...bindParameters)
@@ -121,6 +123,7 @@ DB.prototype.query = function (query, ...bindParameters) {
  *
  * @param {Object} query the SQL-Query that should be run. Can contain placeholders for bind parameters.
  * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
+ * @returns {Iterator}
  */
 DB.prototype.queryIterate = function (query, ...bindParameters) {
   return this.connection().prepare(query).iterate(...bindParameters)
@@ -132,6 +135,7 @@ DB.prototype.queryIterate = function (query, ...bindParameters) {
  *
  * @param {Object} query the SQL-Query that should be run. Can contain placeholders for bind parameters.
  * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
+ * @returns {object}
  */
 DB.prototype.queryFirstRow = function (query, ...bindParameters) {
   return this.connection().prepare(query).get(...bindParameters)
@@ -142,6 +146,7 @@ DB.prototype.queryFirstRow = function (query, ...bindParameters) {
  *
  * @param {Object} query the SQL-Query that should be run. Can contain placeholders for bind parameters.
  * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
+ * @returns {any}
  */
 DB.prototype.queryFirstCell = function (query, ...bindParameters) {
   return this.connection().prepare(query).pluck(true).get(...bindParameters)
@@ -153,6 +158,7 @@ DB.prototype.queryFirstCell = function (query, ...bindParameters) {
  * @param {Object} column Name of the column
  * @param {Object} query the SQL-Query that should be run. Can contain placeholders for bind parameters.
  * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
+ * @returns {array}
  */
 DB.prototype.queryColumn = function (column, query, ...bindParameters) {
   return this.query(query, ...bindParameters).map(v => v[column])
@@ -165,6 +171,7 @@ DB.prototype.queryColumn = function (column, query, ...bindParameters) {
  * @param {Object} column Name of the column that values should be the value for the object
  * @param {Object} query the SQL-Query that should be run. Can contain placeholders for bind parameters.
  * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
+ * @returns {object}
  */
 DB.prototype.queryKeyAndColumn = function (key, column, query, ...bindParameters) {
   return this.query(query, ...bindParameters).reduce((cur, v) => {
@@ -180,6 +187,7 @@ DB.prototype.queryKeyAndColumn = function (key, column, query, ...bindParameters
  * @param {Object} data a Object of data to set. Key is the name of the column. Value 'undefined' is filtered
  * @param {String|Array|Object} where required. array with a string and the replacements for ? after that. F.e. ['id > ? && name = ?', id, name]. Or an object with key values. F.e. {id: params.id}. Or simply an ID that will be translated to ['id = ?', id]
  * @param {undefined|Array} whiteList optional List of columns that can only be updated with "data"
+ * @returns {Integer}
  */
 DB.prototype.update = function (table, data, where, whiteList) {
   if (!where) {
@@ -249,6 +257,7 @@ DB.prototype.update = function (table, data, where, whiteList) {
  * @param {Object} data a Object of data to set. Key is the name of the column. Value 'undefined' is filtered
  * @param {String|Array|Object} where required. array with a string and the replacements for ? after that. F.e. ['id > ? && name = ?', id, name]. Or an object with key values. F.e. {id: params.id}. Or simply an ID that will be translated to ['id = ?', id]
  * @param {undefined|Array} whiteBlackList optional List of columns that can not be updated with "data" (blacklist)
+ * @returns {Integer}
  */
 DB.prototype.updateWithBlackList = function (table, data, where, blackList) {
   return this.update(table, data, where, createWhiteListByBlackList.bind(this)(table, blackList))
@@ -260,6 +269,7 @@ DB.prototype.updateWithBlackList = function (table, data, where, blackList) {
  * @param {String} table Name of the table
  * @param {Object|Array} data a Object of data to set. Key is the name of the column. Can be an array of objects.
  * @param {undefined|Array} whiteList optional List of columns that only can be updated with "data"
+ * @returns {Integer}
  */
 DB.prototype.insert = function (table, data, whiteList) {
   return (this.run(
@@ -273,6 +283,7 @@ DB.prototype.insert = function (table, data, whiteList) {
  * @param {String} table Name of the table
  * @param {Object|Array} data a Object of data to set. Key is the name of the column. Can be an array of objects.
  * @param {undefined|Array} whiteBlackList optional List of columns that can not be updated with "data" (blacklist)
+ * @returns {Integer}
  */
 DB.prototype.insertWithBlackList = function (table, data, blackList) {
   return this.insert(table, data, createWhiteListByBlackList.bind(this)(table, blackList))
@@ -284,6 +295,7 @@ DB.prototype.insertWithBlackList = function (table, data, blackList) {
  * @param {String} table Name of the table
  * @param {Object|Array} data a Object of data to set. Key is the name of the column. Can be an array of objects.
  * @param {undefined|Array} whiteList optional List of columns that only can be updated with "data"
+ * @returns {Integer}
  */
 DB.prototype.replace = function (table, data, whiteList) {
   return (this.run(
@@ -297,6 +309,7 @@ DB.prototype.replace = function (table, data, whiteList) {
  * @param {String} table Name of the table
  * @param {Object|Array} data a Object of data to set. Key is the name of the column. Can be an array of objects.
  * @param {undefined|Array} whiteBlackList optional List of columns that can not be updated with "data" (blacklist)
+ * @returns {Integer}
  */
 DB.prototype.replaceWithBlackList = function (table, data, blackList) {
   return this.replace(table, data, createWhiteListByBlackList.bind(this)(table, blackList))

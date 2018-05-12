@@ -1,56 +1,100 @@
 # better-sqlite3-helper
 
-A wrapper library for the work with [better-sqlite3](https://www.npmjs.com/package/better-sqlite3/) ("The fastest and simplest library for SQLite3 in Node.js"). It's intended for simple apps and offer some new functions and a migration-system.
+A wrapper library for the work with [better-sqlite3](https://www.npmjs.com/package/better-sqlite3/) ("The fastest and simplest library for SQLite3 in Node.js"). It's intended for simple server-apps for nodejs and offer some new functions and a migration-system.
+
+## How to install
+
+Like always
+
+```bash
+npm i better-sqlite3-helper
+```
+
+## How to use
+
+1. In every file you want access to a sqlite3 database simply require the library and use it right away.
+##### anyServerFile.js
+```js
+const DB = require('better-sqlite3-helper');
+
+let row = DB().queryFirstRow('SELECT * FROM users WHERE id=?', userId);
+console.log(row.firstName, row.lastName, row.email);
+```
+
+2. To setup your database, create a `sql`-file named `001-init.sql` in a `migrations`-directory in the root-directory of your program.
+##### ~/migrations/001-init.sql
+```sql
+-- Up
+CREATE TABLE `Setting` (
+  `key`	TEXT NOT NULL UNIQUE,
+  `value` BLOB,
+  `type` INT NOT NULL DEFAULT 0,
+  PRIMARY KEY(`key`)
+);
+
+-- Down
+DROP TABLE IF EXISTS Setting;
+```
+And that's it!
 
 ## One global instance
-A normal, simple application is mostly working with only one database. To make the class managment more easy, this library does the access-control for you - mainly as a singleton.
+A normal, simple application is mostly working with only one database. To make the class managment more easy, this library does the access-control for you - mainly as a singleton. (But you can create a new instance to access other databases.)
 
 The database loads lazy. Only when it's used for the first time, the database is read from the file, the migration is started and the journal-mode WAL is set. The default directory of the database is `'./data/sqlite3.db'`. 
 
-If you want to change the default-values, you can do this by calling the library once in the beginning and thus setting it up:
+If you want to change the default-values, you can do this by calling the library once in the beginning of your server-code and thus setting it up:
 ##### index.js
-  ```js
-  const DB = require('better-sqlite3-helper');
+```js
+const DB = require('better-sqlite3-helper');
 
-  // with the call the global instance is created
-  DB({
-    path: './data/sqlite3.db', // this is the default
-    memory: false, // create a db only in memory
-    readonly: false, // read only
-    fileMustExist: false, // throw error if database not exists
-    WAL: true, // automatically enable 'PRAGMA journal_mode = WAL'
-    migrate: {  // disable completely by setting `migrate: false`
-      force: false, // 'last' to automatically reapply the last migration-file
-      table: 'migration' // name of the database table that is used to keep track
-      migrationsPath: './migrations' // path of the migration-files
-    }
-  })
-  ```
+// The first call creates the global instance with your settings
+DB({
+  path: './data/sqlite3.db', // this is the default
+  memory: false, // create a db only in memory
+  readonly: false, // read only
+  fileMustExist: false, // throw error if database not exists
+  WAL: true, // automatically enable 'PRAGMA journal_mode = WAL'
+  migrate: {  // disable completely by setting `migrate: false`
+    force: false, // set to 'last' to automatically reapply the last migration-file
+    table: 'migration', // name of the database table that is used to keep track
+    migrationsPath: './migrations' // path of the migration-files
+  }
+})
+```
 
-Then use the library without parameter:
+After that you can use the library without parameter:
 ##### anotherAPIFile.js
-  ```js
-  const DB = require('better-sqlite3-helper');
+```js
+const DB = require('better-sqlite3-helper');
 
-  // a second call directly returns the global instance
-  let row = DB().queryFirstRow('SELECT * FROM users WHERE id=?', userId);
-  console.log(row.firstName, row.lastName, row.email);
-  ```
+// a second call directly returns the global instance
+let row = DB().queryFirstRow('SELECT * FROM users WHERE id=?', userId);
+console.log(row.firstName, row.lastName, row.email);
+```
 
 ## New Functions
-This class implements shorthand methods for common scenarios.
+This class implements shorthand methods for [better-sqlite3](https://www.npmjs.com/package/better-sqlite3/).
 
 ```js
 // shorthand for db.prepare('SELECT * FROM users').all(); 
 let allUsers = DB().query('SELECT * FROM users');
+// result: [{firstName: 'a', lastName: 'b', email: 'foo@b.ar'},{},...]
+
 // shorthand for db.prepare('SELECT * FROM users WHERE id=?').get(userId); 
 let row = DB().queryFirstRow('SELECT * FROM users WHERE id=?', userId);
+// result: {firstName: 'a', lastName: 'b', email: 'foo@b.ar'}
+
 // shorthand for db.prepare('SELECT * FROM users WHERE id=?').pluck(true).get(userId); 
 let email = DB().queryFirstCell('SELECT email FROM users WHERE id=?', userId);
+// result: 'foo@b.ar'
+
 // shorthand for db.prepare('SELECT * FROM users').all().map((e)=>e.email); 
 let emails = DB().queryColumn('email', 'SELECT email FROM users');
+// result: ['foo@b.ar', 'foo2@b.ar', ...]
+
 // shorthand for db.prepare('SELECT * FROM users').all().reduce((o, e) => {o[e.lastName] = e.email; return o;}, {});
 let emailsByLastName = DB().queryKeyAndColumn('lastName', 'email', 'SELECT lastName, name FROM users');
+// result: {b: 'foo@b.ar', c: 'foo2@b.ar', ...}
 ```
 
 ## Insert, Update and Replace
