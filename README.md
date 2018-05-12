@@ -12,7 +12,7 @@ npm i better-sqlite3-helper
 
 ## How to use
 
-1. In every file you want access to a sqlite3 database simply require the library and use it right away.
+In every file you want access to a sqlite3 database simply require the library and use it right away.
 ##### anyServerFile.js
 ```js
 const DB = require('better-sqlite3-helper');
@@ -21,19 +21,19 @@ let row = DB().queryFirstRow('SELECT * FROM users WHERE id=?', userId);
 console.log(row.firstName, row.lastName, row.email);
 ```
 
-2. To setup your database, create a `sql`-file named `001-init.sql` in a `migrations`-directory in the root-directory of your program.
+To setup your database, create a `sql`-file named `001-init.sql` in a `migrations`-directory in the root-directory of your program.
 ##### ~/migrations/001-init.sql
 ```sql
 -- Up
-CREATE TABLE `Setting` (
-  `key`	TEXT NOT NULL UNIQUE,
-  `value` BLOB,
-  `type` INT NOT NULL DEFAULT 0,
-  PRIMARY KEY(`key`)
+CREATE TABLE `users` (
+  id INTEGER PRIMARY KEY, 
+  firstName TEXT NOT NULL, 
+  lastName TEXT NOT NULL, 
+  email TEXT NOT NULL
 );
 
 -- Down
-DROP TABLE IF EXISTS Setting;
+DROP TABLE IF EXISTS `users`;
 ```
 And that's it!
 
@@ -78,11 +78,11 @@ This class implements shorthand methods for [better-sqlite3](https://www.npmjs.c
 ```js
 // shorthand for db.prepare('SELECT * FROM users').all(); 
 let allUsers = DB().query('SELECT * FROM users');
-// result: [{firstName: 'a', lastName: 'b', email: 'foo@b.ar'},{},...]
+// result: [{id: 1, firstName: 'a', lastName: 'b', email: 'foo@b.ar'},{},...]
 
 // shorthand for db.prepare('SELECT * FROM users WHERE id=?').get(userId); 
 let row = DB().queryFirstRow('SELECT * FROM users WHERE id=?', userId);
-// result: {firstName: 'a', lastName: 'b', email: 'foo@b.ar'}
+// result: {id: 1, firstName: 'a', lastName: 'b', email: 'foo@b.ar'}
 
 // shorthand for db.prepare('SELECT * FROM users WHERE id=?').pluck(true).get(userId); 
 let email = DB().queryFirstCell('SELECT email FROM users WHERE id=?', userId);
@@ -151,6 +151,37 @@ DB().replace('users', req.body, ['lastName', 'firstName'])
 // replace with blacklist (id and email is not allowed; only valid columns of the table are allowed)
 DB().replaceWithBlackList('users', req.body, ['id', 'email']) // or insertWithBlackList
 ```
+
+### Try and catch
+
+If you want to put invalid values into the database, the functions will throw an error. So don't forget to surround the functions with a `try-catch`. Here is an example for an express-server:
+```js
+const { Router } = require('express')
+const bodyParser = require('body-parser')
+const DB = require('better-sqlite3-helper')
+
+router.patch('/user/:id', bodyParser.json(), function (req, res, next) {
+  try {
+    if (!req.params.id) {
+      res.status(400).json({error: 'missing id'})
+      return
+    }
+    DB().updateWithBlackList(
+      'users',
+      req.body,
+      req.params.id,
+      ['id']
+    )
+
+    res.statusCode(200)
+  } catch (e) {
+    console.error(e)
+    res.status(503).json({error: e.message})
+  }
+})
+```
+
+
 
 ## Migrations
 
