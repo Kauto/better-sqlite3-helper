@@ -1,6 +1,6 @@
 {
   "name": "better-sqlite3-helper",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A wrapper library that eases the work with better-sqlite3 with some new functions and a migration-system",
   "main": "src/database.js",
   "scripts": {
