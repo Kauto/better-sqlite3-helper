@@ -21,7 +21,8 @@
   ],
   "dependencies": {
     "app-root-path": "^2.0.1",
-    "better-sqlite3": "^4.1.0"
+    "better-sqlite3": "^4.1.0",
+    "mkdirp": "^0.5.1"
   },
   "devDependencies": {
     "eslint": "^4.19.1",
@@ -31,7 +32,6 @@
     "eslint-plugin-promise": "^3.7.0",
     "eslint-plugin-standard": "^3.1.0",
     "chai": "^4.1.2",
-    "mkdirp": "^0.5.1",
     "mocha": "^5.1.1"
   }
 }
