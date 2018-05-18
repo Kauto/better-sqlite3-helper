@@ -2,7 +2,6 @@ const Database = require('better-sqlite3')
 const path = require('path')
 const fs = require('fs')
 const mkdirp = require('mkdirp')
-const isPlainObject = require('lodash/isPlainObject')
 const appRoot = require('app-root-path').path
 
 const dbFile = path.resolve(appRoot, './data/sqlite3.db')
@@ -52,7 +51,7 @@ DB.prototype.connection = function () {
     this.db.pragma('journal_mode = WAL')
   }
   if (this.options.migrate) {
-    this.migrate(isPlainObject(this.options.migrate) ? this.options.migrate : {})
+    this.migrate(typeof this.options.migrate === 'object' ? this.options.migrate : {})
   }
   return this.db
 }
@@ -196,7 +195,7 @@ DB.prototype.update = function (table, data, where, whiteList) {
   if (!table) {
     throw new Error('Table is missing for the update command of DB()')
   }
-  if (!isPlainObject(data) || !Object.keys(data).length) {
+  if (typeof data !== 'object' || !Object.keys(data).length) {
     return 0
   }
 
@@ -226,7 +225,7 @@ DB.prototype.update = function (table, data, where, whiteList) {
     let [whereTerm, ...whereParameter] = where
     sql += whereTerm
     parameter = [...parameter, ...whereParameter]
-  } else if (isPlainObject(where)) {
+  } else if (typeof where === 'object') {
     let whereStringBuilder = []
     for (let keyOfWhere in where) {
       const value = where[keyOfWhere]
@@ -330,8 +329,11 @@ function createInsertOrReplaceStatement (insertOrReplace, table, data, whiteList
   if (!table) {
     throw new Error(`Table is missing for the ${insertOrReplace} command of DB()`)
   }
-  if (isPlainObject(data)) {
+  if (!Array.isArray(data)) {
     data = [data]
+  }
+  if (typeof data[0] !== 'object') {
+    throw new Error(`data does not contain a object`)
   }
 
   let fields = Object.keys(data[0])
