@@ -9,3 +9,6 @@ data/
 
 # tests
 test/
+
+# eslint
+.eslintrc.js
