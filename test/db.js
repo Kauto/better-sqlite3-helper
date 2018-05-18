@@ -72,17 +72,4 @@ describe('Database Basics', function () {
     })
     expect(db.queryFirstCell('SELECT `value` FROM Setting WHERE `key` = ?', 'test')).to.be.equal('now')
   })
-
-  it('insert', function () {
-    db = new DB({
-      migrate: {
-        migrationsPath: './test/migrations'
-      }
-    })
-    expect(db.insert('Setting', {
-      key: 'test2',
-      value: '1234',
-      type: 0
-    })).to.be.equal(2)
-  })
 })
