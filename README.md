@@ -79,22 +79,32 @@ This class implements shorthand methods for [better-sqlite3](https://www.npmjs.c
 // shorthand for db.prepare('SELECT * FROM users').all(); 
 let allUsers = DB().query('SELECT * FROM users');
 // result: [{id: 1, firstName: 'a', lastName: 'b', email: 'foo@b.ar'},{},...]
+// result for no result: []
 
 // shorthand for db.prepare('SELECT * FROM users WHERE id=?').get(userId); 
 let row = DB().queryFirstRow('SELECT * FROM users WHERE id=?', userId);
 // result: {id: 1, firstName: 'a', lastName: 'b', email: 'foo@b.ar'}
+// result for no result: undefined
+
+// shorthand for db.prepare('SELECT * FROM users WHERE id=?').get(999) || {}; 
+let {id, firstname} = DB().queryFirstRowObject('SELECT * FROM users WHERE id=?', userId);
+// result: id = 1; firstName = 'a'
+// result for no result: id = undefined; firstName = undefined
 
 // shorthand for db.prepare('SELECT * FROM users WHERE id=?').pluck(true).get(userId); 
 let email = DB().queryFirstCell('SELECT email FROM users WHERE id=?', userId);
 // result: 'foo@b.ar'
+// result for no result: undefined
 
-// shorthand for db.prepare('SELECT * FROM users').all().map((e)=>e.email); 
+// shorthand for db.prepare('SELECT * FROM users').all().map(e => e.email); 
 let emails = DB().queryColumn('email', 'SELECT email FROM users');
 // result: ['foo@b.ar', 'foo2@b.ar', ...]
+// result for no result: []
 
 // shorthand for db.prepare('SELECT * FROM users').all().reduce((o, e) => {o[e.lastName] = e.email; return o;}, {});
 let emailsByLastName = DB().queryKeyAndColumn('lastName', 'email', 'SELECT lastName, name FROM users');
 // result: {b: 'foo@b.ar', c: 'foo2@b.ar', ...}
+// result for no result: {}
 ```
 
 ## Insert, Update and Replace

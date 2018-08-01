@@ -134,10 +134,24 @@ DB.prototype.queryIterate = function (query, ...bindParameters) {
  *
  * @param {Object} query the SQL-Query that should be run. Can contain placeholders for bind parameters.
  * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
- * @returns {object}
+ * @returns {Object|null}
  */
 DB.prototype.queryFirstRow = function (query, ...bindParameters) {
   return this.connection().prepare(query).get(...bindParameters)
+}
+
+/**
+ * Returns the values of the first row of the query-result
+ * @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#getbindparameters---row
+ * It returns always an object and thus can be used with destructuring assignment
+ *
+ * @example const {id, name} = DB().queryFirstRowObject(sql)
+ * @param {Object} query the SQL-Query that should be run. Can contain placeholders for bind parameters.
+ * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
+ * @returns {Object}
+ */
+DB.prototype.queryFirstRowObject = function (query, ...bindParameters) {
+  return this.connection().prepare(query).get(...bindParameters) || {}
 }
 
 /**

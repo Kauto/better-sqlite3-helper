@@ -47,6 +47,21 @@ describe('Database Basics', function () {
       migrate: false
     })
     expect(db.queryFirstRow('SELECT ? as `1` UNION SELECT ? as `1`', 1, 2)).to.deep.equal({'1': 1})
+    expect(db.queryFirstRow('SELECT 1 WHERE 1 = 2')).to.equal(undefined)
+  })
+
+  it('should return undefined with queryFirstRow for no result', function () {
+    db = new DB({
+      migrate: false
+    })
+    expect(db.queryFirstRow('SELECT 1 WHERE 1 = 2')).to.equal(undefined)
+  })
+
+  it('should return empty object with queryFirstRowObject for no result', function () {
+    db = new DB({
+      migrate: false
+    })
+    expect(db.queryFirstRowObject('SELECT 1 WHERE 1 = 2')).to.deep.equal({})
   })
 
   it('should return first cell with queryFirstCell', function () {
