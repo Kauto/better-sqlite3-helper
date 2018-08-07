@@ -60,6 +60,10 @@ DB.prototype.prepare = function (source) {
   return this.connection().prepare(source)
 }
 
+DB.prototype.transaction = function (source) {
+  return this.connection().transaction(source)
+}
+
 DB.prototype.exec = function (source) {
   return this.connection().exec(source)
 }
