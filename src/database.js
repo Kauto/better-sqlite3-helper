@@ -291,7 +291,7 @@ DB.prototype.updateWithBlackList = function (table, data, where, blackList) {
 DB.prototype.insert = function (table, data, whiteList) {
   return (this.run(
     ...createInsertOrReplaceStatement('INSERT', table, data, whiteList)
-  )).lastInsertROWID
+  )).lastInsertRowid
 }
 
 /**
@@ -367,7 +367,7 @@ function createInsertOrReplaceStatement (insertOrReplace, table, data, whiteList
 
   data.forEach(rowData => {
     addComma && (sql += ',')
-    sql += '(' + Array.from({length: fields.length}, () => '?').join(',') + ')'
+    sql += '(' + Array.from({ length: fields.length }, () => '?').join(',') + ')'
     fields.forEach(field => parameter.push(rowData[field]))
     addComma = true
   })
