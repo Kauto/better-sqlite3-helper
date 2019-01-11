@@ -95,7 +95,7 @@ DB.prototype.defaultSafeIntegers = function (toggleState) {
  * Executes the prepared statement. When execution completes it returns an info object describing any changes made. The info object has two properties:
  *
  * info.changes: The total number of rows that were inserted, updated, or deleted by this operation. Changes made by foreign key actions or trigger programs do not count.
- * info.lastInsertROWID: The rowid of the last row inserted into the database (ignoring those caused by trigger programs). If the current statement did not insert any rows into the database, this number should be completely ignored.
+ * info.lastInsertRowid: The rowid of the last row inserted into the database (ignoring those caused by trigger programs). If the current statement did not insert any rows into the database, this number should be completely ignored.
  *
  * If execution of the statement fails, an Error is thrown.
  * @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#runbindparameters---object
@@ -317,7 +317,7 @@ DB.prototype.insertWithBlackList = function (table, data, blackList) {
 DB.prototype.replace = function (table, data, whiteList) {
   return (this.run(
     ...createInsertOrReplaceStatement('REPLACE', table, data, whiteList)
-  )).lastInsertROWID
+  )).lastInsertRowid
 }
 
 /**
