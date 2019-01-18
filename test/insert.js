@@ -1,5 +1,5 @@
-const {describe, it, afterEach} = require('mocha')
-const {expect} = require('chai')
+const { describe, it, afterEach } = require('mocha')
+const { expect } = require('chai')
 const DB = require('../src/database')
 const fs = require('fs')
 const path = require('path')
@@ -84,5 +84,36 @@ describe('Database Insert', function () {
       type: 0
     }], ['type'])).to.be.equal(3)
     expect(db.queryFirstCell('SELECT type FROM Setting WHERE key = ?', 'test2')).to.equal(0)
+  })
+
+  it('can insert one line with replace', function () {
+    db = new DB({
+      migrate: {
+        migrationsPath: './test/migrations'
+      }
+    })
+    expect(db.replace('Setting', {
+      key: 'test2',
+      value: '12349',
+      type: 0
+    })).to.be.equal(2)
+  })
+
+  it('replace will return new ID if it overwrites', function () {
+    db = new DB({
+      migrate: {
+        migrationsPath: './test/migrations'
+      }
+    })
+    expect(db.replace('Setting', {
+      key: 'test',
+      value: 'new value',
+      type: 0
+    })).to.be.equal(2)
+    expect(db.replace('Setting', {
+      key: 'test',
+      value: 'new value',
+      type: 0
+    })).to.be.equal(3)
   })
 })
