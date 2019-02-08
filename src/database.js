@@ -29,6 +29,11 @@ function DB (options = {}) {
   }, options)
   // use memory when path is the string ':memory:'
   this.options.memory = options.memory === undefined ? options.path === ':memory:' : options.memory
+  Object.defineProperty(this, 'open', { get: function () { return this.connection().open } })
+  Object.defineProperty(this, 'inTransaction', { get: function () { return this.connection().inTransaction } })
+  Object.defineProperty(this, 'name', { get: function () { return this.connection().name } })
+  Object.defineProperty(this, 'memory', { get: function () { return this.connection().memory } })
+  Object.defineProperty(this, 'readonly', { get: function () { return this.connection().readonly } })
 }
 
 DB.prototype.connection = function () {
@@ -106,6 +111,7 @@ DB.prototype.close = function () {
     this.db.close()
     this.db = undefined
   }
+  return this
 }
 
 DB.prototype.defaultSafeIntegers = function (toggleState) {
