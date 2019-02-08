@@ -65,7 +65,8 @@ DB.prototype.transaction = function (source) {
 }
 
 DB.prototype.exec = function (source) {
-  return this.connection().exec(source)
+  this.connection().exec(source)
+  return this
 }
 
 DB.prototype.pragma = function (source, simplify = false) {
@@ -73,7 +74,27 @@ DB.prototype.pragma = function (source, simplify = false) {
 }
 
 DB.prototype.checkpoint = function (databaseName) {
-  return this.connection().checkpoint(databaseName)
+  this.connection().checkpoint(databaseName)
+  return this
+}
+
+DB.prototype.loadExtension = function (...args) {
+  this.connection().loadExtension(...args)
+  return this
+}
+
+DB.prototype.function = function (...args) {
+  this.connection().function(...args)
+  return this
+}
+
+DB.prototype.aggregate = function (...args) {
+  this.connection().aggregate(...args)
+  return this
+}
+
+DB.prototype.backup = function (...args) {
+  return this.connection().backup(...args)
 }
 
 DB.prototype.register = function (...args) {
