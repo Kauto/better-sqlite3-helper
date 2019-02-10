@@ -99,20 +99,12 @@ DB.prototype.backup = function (destination, options = {}) {
   return this.connection().backup(destination || path.resolve(appRoot, `./data/sqlite3-bak-${Date.now()}.db`), options)
 }
 
-DB.prototype.register = function (...args) {
-  return this.connection().register(...args)
-}
-
 DB.prototype.close = function () {
   if (this.db) {
     this.db.close()
     this.db = undefined
   }
   return this
-}
-
-DB.prototype.defaultSafeIntegers = function (toggleState) {
-  return this.connection().defaultSafeIntegers(toggleState)
 }
 
 /**
@@ -122,7 +114,7 @@ DB.prototype.defaultSafeIntegers = function (toggleState) {
  * info.lastInsertRowid: The rowid of the last row inserted into the database (ignoring those caused by trigger programs). If the current statement did not insert any rows into the database, this number should be completely ignored.
  *
  * If execution of the statement fails, an Error is thrown.
- * @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#runbindparameters---object
+ * @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#runbindparameters---object
  *
  * @param {Object} query the SQL-Query that should be run. Can contain placeholders for bind parameters.
  * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
@@ -134,7 +126,7 @@ DB.prototype.run = function (query, ...bindParameters) {
 
 /**
  * Returns all values of a query
- * @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#allbindparameters---array-of-rows
+ * @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#allbindparameters---array-of-rows
  *
  * @param {Object} query the SQL-Query that should be run. Can contain placeholders for bind parameters.
  * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
@@ -146,7 +138,7 @@ DB.prototype.query = function (query, ...bindParameters) {
 
 /**
  * Similar to .query(), but instead of returning every row together, an iterator is returned so you can retrieve the rows one by one.
- * @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#iteratebindparameters---iterator
+ * @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#iteratebindparameters---iterator
  *
  * @param {Object} query the SQL-Query that should be run. Can contain placeholders for bind parameters.
  * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
@@ -158,10 +150,10 @@ DB.prototype.queryIterate = function (query, ...bindParameters) {
 
 /**
  * Returns the values of the first row of the query-result
- * @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#getbindparameters---row
+ * @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#getbindparameters---row
  *
  * @param {Object} query the SQL-Query that should be run. Can contain placeholders for bind parameters.
- * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
+ * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#binding-parameters
  * @returns {Object|null}
  */
 DB.prototype.queryFirstRow = function (query, ...bindParameters) {
@@ -170,12 +162,12 @@ DB.prototype.queryFirstRow = function (query, ...bindParameters) {
 
 /**
  * Returns the values of the first row of the query-result
- * @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#getbindparameters---row
+ * @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#getbindparameters---row
  * It returns always an object and thus can be used with destructuring assignment
  *
  * @example const {id, name} = DB().queryFirstRowObject(sql)
  * @param {Object} query the SQL-Query that should be run. Can contain placeholders for bind parameters.
- * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
+ * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#binding-parameters
  * @returns {Object}
  */
 DB.prototype.queryFirstRowObject = function (query, ...bindParameters) {
@@ -186,7 +178,7 @@ DB.prototype.queryFirstRowObject = function (query, ...bindParameters) {
  * Returns the value of the first column in the first row of the query-result
  *
  * @param {Object} query the SQL-Query that should be run. Can contain placeholders for bind parameters.
- * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
+ * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#binding-parameters
  * @returns {any}
  */
 DB.prototype.queryFirstCell = function (query, ...bindParameters) {
@@ -198,7 +190,7 @@ DB.prototype.queryFirstCell = function (query, ...bindParameters) {
  *
  * @param {Object} column Name of the column
  * @param {Object} query the SQL-Query that should be run. Can contain placeholders for bind parameters.
- * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
+ * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#binding-parameters
  * @returns {array}
  */
 DB.prototype.queryColumn = function (column, query, ...bindParameters) {
@@ -211,7 +203,7 @@ DB.prototype.queryColumn = function (column, query, ...bindParameters) {
  * @param {String} key Name of the column that values should be the key
  * @param {Object} column Name of the column that values should be the value for the object
  * @param {Object} query the SQL-Query that should be run. Can contain placeholders for bind parameters.
- * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/wiki/API#binding-parameters
+ * @param {any} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#binding-parameters
  * @returns {object}
  */
 DB.prototype.queryKeyAndColumn = function (key, column, query, ...bindParameters) {
@@ -367,6 +359,14 @@ function createWhiteListByBlackList (table, blackList) {
   return whiteList
 }
 
+/**
+ * Internal function to create the insert or replace statement
+ *
+ * @param {String} insertOrReplace
+ * @param {String} table
+ * @param {Any} data
+ * @param {undefined|Array} whiteList
+ */
 function createInsertOrReplaceStatement (insertOrReplace, table, data, whiteList) {
   if (!table) {
     throw new Error(`Table is missing for the ${insertOrReplace} command of DB()`)
