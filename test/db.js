@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-expressions */
 const { describe, it, afterEach } = require('mocha')
 const { expect } = require('chai')
 const DB = require('../src/database')
@@ -87,19 +86,5 @@ describe('Database Basics', function () {
       }
     })
     expect(db.queryFirstCell('SELECT `value` FROM Setting WHERE `key` = ?', 'test')).to.be.equal('now')
-  })
-
-  it('should show database as open', function () {
-    db = new DB({
-      migrate: false
-    })
-    expect(db.open).to.equal(true)
-  })
-
-  it('should show name of database', function () {
-    db = new DB({
-      migrate: false
-    })
-    expect(db.name).to.be.ok
   })
 })

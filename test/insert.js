@@ -26,7 +26,7 @@ describe('Database Insert', function () {
       key: 'test2',
       value: '1234',
       type: 0
-    })).to.be.equal(2)
+    })).to.be.equal(3)
   })
 
   it('can insert more than one line', function () {
@@ -43,7 +43,7 @@ describe('Database Insert', function () {
       key: 'test3',
       value: '12345',
       type: 0
-    }])).to.be.equal(3)
+    }])).to.be.equal(4)
 
     expect(db.queryFirstCell('SELECT COUNT(1) FROM Setting WHERE key IN (?,?)', 'test2', 'test3')).to.be.equal(2)
   })
@@ -62,7 +62,7 @@ describe('Database Insert', function () {
       key: 'test3',
       value: '12345',
       type: 0
-    }], ['key'])).to.be.equal(3)
+    }], ['key'])).to.be.equal(4)
 
     // eslint-disable-next-line no-unused-expressions
     expect(db.queryFirstCell('SELECT value FROM Setting WHERE key = ?', 'test2')).to.be.null
@@ -82,7 +82,7 @@ describe('Database Insert', function () {
       key: 'test3',
       value: '12345',
       type: 0
-    }], ['type'])).to.be.equal(3)
+    }], ['type'])).to.be.equal(4)
     expect(db.queryFirstCell('SELECT type FROM Setting WHERE key = ?', 'test2')).to.equal(0)
   })
 
@@ -96,7 +96,7 @@ describe('Database Insert', function () {
       key: 'test2',
       value: '12349',
       type: 0
-    })).to.be.equal(2)
+    })).to.be.equal(3)
   })
 
   it('replace will return new ID if it overwrites', function () {
@@ -109,11 +109,11 @@ describe('Database Insert', function () {
       key: 'test',
       value: 'new value',
       type: 0
-    })).to.be.equal(2)
+    })).to.be.equal(3)
     expect(db.replace('Setting', {
       key: 'test',
       value: 'new value',
       type: 0
-    })).to.be.equal(3)
+    })).to.be.equal(4)
   })
 })

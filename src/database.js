@@ -34,6 +34,7 @@ function DB (options = {}) {
   Object.defineProperty(this, 'name', { get: function () { return this.connection().name } })
   Object.defineProperty(this, 'memory', { get: function () { return this.connection().memory } })
   Object.defineProperty(this, 'readonly', { get: function () { return this.connection().readonly } })
+  Object.defineProperty(this, 'transaction', { get: function () { return this.connection().transaction } })
 }
 
 DB.prototype.connection = function () {
@@ -65,21 +66,17 @@ DB.prototype.prepare = function (source) {
   return this.connection().prepare(source)
 }
 
-DB.prototype.transaction = function (source) {
-  return this.connection().transaction(source)
-}
-
 DB.prototype.exec = function (source) {
   this.connection().exec(source)
   return this
 }
 
-DB.prototype.pragma = function (source, simplify = false) {
-  return this.connection().pragma(source, simplify)
+DB.prototype.pragma = function (source, options) {
+  return this.connection().pragma(source, options)
 }
 
-DB.prototype.checkpoint = function (databaseName) {
-  this.connection().checkpoint(databaseName)
+DB.prototype.checkpoint = function (...args) {
+  this.connection().checkpoint(...args)
   return this
 }
 
@@ -98,8 +95,8 @@ DB.prototype.aggregate = function (...args) {
   return this
 }
 
-DB.prototype.backup = function (...args) {
-  return this.connection().backup(...args)
+DB.prototype.backup = function (destination, options = {}) {
+  return this.connection().backup(destination || path.resolve(appRoot, `./data/sqlite3-bak-${Date.now()}.db`), options)
 }
 
 DB.prototype.register = function (...args) {
