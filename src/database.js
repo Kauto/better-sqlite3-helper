@@ -29,14 +29,25 @@ function DB (options = {}) {
   }, options)
   // use memory when path is the string ':memory:'
   this.options.memory = options.memory === undefined ? options.path === ':memory:' : options.memory
+
+  /**
+   * @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#properties
+   */
   Object.defineProperty(this, 'open', { get: function () { return this.connection().open } })
   Object.defineProperty(this, 'inTransaction', { get: function () { return this.connection().inTransaction } })
   Object.defineProperty(this, 'name', { get: function () { return this.connection().name } })
   Object.defineProperty(this, 'memory', { get: function () { return this.connection().memory } })
   Object.defineProperty(this, 'readonly', { get: function () { return this.connection().readonly } })
+  /**
+   * @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#transactionfunction---function
+   */
   Object.defineProperty(this, 'transaction', { get: function () { return this.connection().transaction } })
 }
 
+/**
+ * Will (create and) return the Better-Sqlite3-Database-Object
+ * @returns {Database}
+ */
 DB.prototype.connection = function () {
   if (this.db) {
     return this.db
@@ -62,43 +73,111 @@ DB.prototype.connection = function () {
   return this.db
 }
 
-DB.prototype.prepare = function (source) {
-  return this.connection().prepare(source)
+/**
+ * Creates a new prepared Statement from the given SQL string.
+ * @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#preparestring---statement
+ *
+ * @param {string} sql the sql
+ * @returns {Statement}
+ */
+DB.prototype.prepare = function (sql) {
+  return this.connection().prepare(sql)
 }
 
-DB.prototype.exec = function (source) {
-  this.connection().exec(source)
+/**
+ * Executes the given SQL string. Unlike prepared statements, this can execute strings that contain multiple SQL statements.
+ * @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#execstring---this
+ *
+ * @param {String} sqls the sql(s)
+ * @returns {this}
+ */
+DB.prototype.exec = function (sqls) {
+  this.connection().exec(sqls)
   return this
 }
 
-DB.prototype.pragma = function (source, options) {
-  return this.connection().pragma(source, options)
+/**
+ * Executes the given PRAGMA and returns its result.
+ * @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#pragmastring-options---results
+ *
+ * @param {String} string the statement
+ * @param {Object} options the options
+ * @returns {Array|String|Integer} Result
+ */
+DB.prototype.pragma = function (string, options = {}) {
+  return this.connection().pragma(string, options)
 }
 
+/**
+ * Runs a WAL mode checkpoint on all attached databases.
+ * @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#checkpointdatabasename---this
+ *
+ * @param {String} databaseName Name of the Database
+ * @returns {this}
+ */
 DB.prototype.checkpoint = function (...args) {
   this.connection().checkpoint(...args)
   return this
 }
 
+/**
+ * Loads a compiled SQLite3 extension and applies it to the current database connection.
+ * @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#loadextensionpath---this
+ *
+ * @param {String} path Path of the extention
+ * @returns {this}
+ */
 DB.prototype.loadExtension = function (...args) {
   this.connection().loadExtension(...args)
   return this
 }
 
+/**
+ * Registers a user-defined function so that it can be used by SQL statements.
+ * @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#functionname-options-function---this
+ *
+ * @param {String} name
+ * @param {Object} options
+ * @param {function} callback
+ * @returns {this}
+ */
 DB.prototype.function = function (...args) {
   this.connection().function(...args)
   return this
 }
 
+/**
+ * Registers a user-defined aggregate function.
+ * @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#aggregatename-options---this
+ *
+ * @param {String} name
+ * @param {Object} options
+ * @returns {this}
+ */
 DB.prototype.aggregate = function (...args) {
   this.connection().aggregate(...args)
   return this
 }
 
+/**
+ * Initiates a backup of the database, returning a promise for when the backup is complete.
+ * No destination name creates a `sqlite3-bak-${Date.now()}.db`-File in the default data directory.
+ * @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#backupdestination-options---promise
+ *
+ * @param {String} destination Path of the extention
+ * @param {Object} options the options
+ * @returns {Promise}
+ */
 DB.prototype.backup = function (destination, options = {}) {
   return this.connection().backup(destination || path.resolve(appRoot, `./data/sqlite3-bak-${Date.now()}.db`), options)
 }
 
+/**
+ * Closes the database connection.
+ * @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#close---this
+ *
+ * @returns {this}
+ */
 DB.prototype.close = function () {
   if (this.db) {
     this.db.close()
