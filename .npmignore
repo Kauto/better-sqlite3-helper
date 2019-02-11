@@ -10,5 +10,5 @@ data/
 # tests
 test/
 
-# eslint
+# eslint/git
 .eslintrc.js
