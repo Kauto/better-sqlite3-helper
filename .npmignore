@@ -12,3 +12,6 @@ test/
 
 # eslint/git
 .eslintrc.js
+
+# visual studio code
+.vscode

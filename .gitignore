@@ -6,3 +6,5 @@ npm-debug.log
 
 # Saved data
 data/
+
+.vscode
