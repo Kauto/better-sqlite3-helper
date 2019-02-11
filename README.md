@@ -1,10 +1,13 @@
 # better-sqlite3-helper
 
-A wrapper library for the work with [better-sqlite3](https://www.npmjs.com/package/better-sqlite3/) ("The fastest and simplest library for SQLite3 in Node.js"). It's intended for simple server-apps for nodejs and offer some new functions and a migration-system.
+A nodejs wrapper library for the work with [better-sqlite3](https://www.npmjs.com/package/better-sqlite3/) ("The fastest and simplest library for SQLite3 in Node.js"). It's intended for simple server-apps for nodejs and offer some new functions and a migration-system.
+
+## New in Version 2.0
+All commands of better-sqlite3 Version 5 (like [function](https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#functionname-options-function---this) and [backup](https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#backupdestination-options---promise)) can now be used too. Commands for Version 4 are removed. In addition there is now a TypeScript Declaration File for this library.
 
 ## How to install
 
-Like always
+Install it for example with
 
 ```bash
 npm i better-sqlite3-helper
@@ -38,7 +41,7 @@ DROP TABLE IF EXISTS `users`;
 And that's it!
 
 ## One global instance
-A normal, simple application is mostly working with only one database. To make the class managment more easy, this library does the access-control for you - mainly as a singleton. (But you can create a new instance to access other databases.)
+A normal, simple application is mostly working with only one database. To make the class management more easy, this library does the access-control for you - mainly as a singleton. (But you can create a new instance to access other databases.)
 
 The database loads lazy. Only when it's used for the first time, the database is read from the file, the migration is started and the journal-mode WAL is set. The default directory of the database is `'./data/sqlite3.db'`. 
 
@@ -197,7 +200,7 @@ router.patch('/user/:id', bodyParser.json(), function (req, res, next) {
 
 The migration in this library mimics the migration system of the excellent [sqlite](https://www.npmjs.com/package/sqlite) by Kriasoft. 
 
-To use this feature you have to create a `migrations`-directory in your root. Inside you create `sql`-files that are seperated in a up- and a down-part:
+To use this feature you have to create a `migrations`-directory in your root. Inside you create `sql`-files that are separated in a up- and a down-part:
 
 ##### `migrations/001-initial-schema.sql`
 
