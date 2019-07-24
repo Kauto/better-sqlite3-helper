@@ -239,4 +239,4 @@ The files need to be numbered. They are automatically executed before the first 
 
 ## License
 
-[MIT](https://github.com/JoshuaWise/better-sqlite3/blob/master/LICENSE)
+[MIT](https://github.com/Kauto/better-sqlite3-helper/blob/master/LICENSE)
