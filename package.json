@@ -8,6 +8,7 @@
   },
   "author": "Markus Madeja",
   "repository": "Kauto/better-sqlite3-helper",
+  "homepage": "http://intergenies.com/programs/nodejs/better-sqlite3-helper",
   "license": "MIT",
   "keywords": [
     "sqlite3",
@@ -21,17 +22,17 @@
   ],
   "dependencies": {
     "app-root-path": "^2.2.1",
-    "better-sqlite3": "^5.4.1",
+    "better-sqlite3": "^5.4.2",
     "mkdirp": "^0.5.1"
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "eslint": "^6.0.1",
-    "eslint-config-standard": "^13.0.1",
-    "eslint-plugin-import": "^2.18.1",
+    "eslint": "^6.2.0",
+    "eslint-config-standard": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-node": "^9.1.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.0",
+    "eslint-plugin-standard": "^4.0.1",
     "mocha": "^6.2.0"
   }
 }
