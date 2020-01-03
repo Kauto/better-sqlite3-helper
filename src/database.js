@@ -2,9 +2,18 @@ const Database = require('better-sqlite3')
 const path = require('path')
 const fs = require('fs')
 const mkdirp = require('mkdirp')
-const appRoot = require('app-root-path').path
 
-const dbFile = path.resolve(appRoot, './data/sqlite3.db')
+let rootDir = '.'
+try {
+  rootDir = require('app-root-path').path
+} catch (e) {
+  try {
+    const electron = require('electron')
+    rootDir = (electron.app || electron.remote.app).getPath('userData')
+  } catch (e) {}
+}
+
+const dbFile = path.resolve(rootDir, './data/sqlite3.db')
 
 let instance = null
 
@@ -19,29 +28,57 @@ function DB (options = {}) {
     instance = instance || new DB(...arguments)
     return instance
   }
-  this.options = Object.assign({
-    path: dbFile,
-    migrate: true,
-    memory: false,
-    readonly: false,
-    fileMustExist: false,
-    WAL: true
-  }, options)
+  this.options = Object.assign(
+    {
+      path: dbFile,
+      migrate: true,
+      memory: false,
+      readonly: false,
+      fileMustExist: false,
+      WAL: true
+    },
+    options
+  )
   // use memory when path is the string ':memory:'
-  this.options.memory = options.memory === undefined ? options.path === ':memory:' : options.memory
+  this.options.memory =
+    options.memory === undefined ? options.path === ':memory:' : options.memory
 
   /**
    * @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#properties
    */
-  Object.defineProperty(this, 'open', { get: function () { return this.connection().open } })
-  Object.defineProperty(this, 'inTransaction', { get: function () { return this.connection().inTransaction } })
-  Object.defineProperty(this, 'name', { get: function () { return this.connection().name } })
-  Object.defineProperty(this, 'memory', { get: function () { return this.connection().memory } })
-  Object.defineProperty(this, 'readonly', { get: function () { return this.connection().readonly } })
+  Object.defineProperty(this, 'open', {
+    get: function () {
+      return this.connection().open
+    }
+  })
+  Object.defineProperty(this, 'inTransaction', {
+    get: function () {
+      return this.connection().inTransaction
+    }
+  })
+  Object.defineProperty(this, 'name', {
+    get: function () {
+      return this.connection().name
+    }
+  })
+  Object.defineProperty(this, 'memory', {
+    get: function () {
+      return this.connection().memory
+    }
+  })
+  Object.defineProperty(this, 'readonly', {
+    get: function () {
+      return this.connection().readonly
+    }
+  })
   /**
    * @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#transactionfunction---function
    */
-  Object.defineProperty(this, 'transaction', { get: function () { return this.connection().transaction } })
+  Object.defineProperty(this, 'transaction', {
+    get: function () {
+      return this.connection().transaction
+    }
+  })
 }
 
 /**
@@ -68,7 +105,9 @@ DB.prototype.connection = function () {
     this.db.pragma('journal_mode = WAL')
   }
   if (this.options.migrate) {
-    this.migrate(typeof this.options.migrate === 'object' ? this.options.migrate : {})
+    this.migrate(
+      typeof this.options.migrate === 'object' ? this.options.migrate : {}
+    )
   }
   return this.db
 }
@@ -182,7 +221,10 @@ DB.prototype.aggregate = function (...args) {
  * @returns {Promise}
  */
 DB.prototype.backup = function (destination, options = {}) {
-  return this.connection().backup(destination || path.resolve(appRoot, `./data/sqlite3-bak-${Date.now()}.db`), options)
+  return this.connection().backup(
+    destination || path.resolve(rootDir, `./data/sqlite3-bak-${Date.now()}.db`),
+    options
+  )
 }
 
 /**
@@ -214,7 +256,9 @@ DB.prototype.close = function () {
  * @returns {*}
  */
 DB.prototype.run = function (query, ...bindParameters) {
-  return this.connection().prepare(query).run(...bindParameters)
+  return this.connection()
+    .prepare(query)
+    .run(...bindParameters)
 }
 
 /**
@@ -226,7 +270,9 @@ DB.prototype.run = function (query, ...bindParameters) {
  * @returns {Array}
  */
 DB.prototype.query = function (query, ...bindParameters) {
-  return this.connection().prepare(query).all(...bindParameters)
+  return this.connection()
+    .prepare(query)
+    .all(...bindParameters)
 }
 
 /**
@@ -238,7 +284,9 @@ DB.prototype.query = function (query, ...bindParameters) {
  * @returns {Iterator}
  */
 DB.prototype.queryIterate = function (query, ...bindParameters) {
-  return this.connection().prepare(query).iterate(...bindParameters)
+  return this.connection()
+    .prepare(query)
+    .iterate(...bindParameters)
 }
 
 /**
@@ -250,7 +298,9 @@ DB.prototype.queryIterate = function (query, ...bindParameters) {
  * @returns {Object|undefined}
  */
 DB.prototype.queryFirstRow = function (query, ...bindParameters) {
-  return this.connection().prepare(query).get(...bindParameters)
+  return this.connection()
+    .prepare(query)
+    .get(...bindParameters)
 }
 
 /**
@@ -264,7 +314,11 @@ DB.prototype.queryFirstRow = function (query, ...bindParameters) {
  * @returns {Object}
  */
 DB.prototype.queryFirstRowObject = function (query, ...bindParameters) {
-  return this.connection().prepare(query).get(...bindParameters) || {}
+  return (
+    this.connection()
+      .prepare(query)
+      .get(...bindParameters) || {}
+  )
 }
 
 /**
@@ -275,7 +329,10 @@ DB.prototype.queryFirstRowObject = function (query, ...bindParameters) {
  * @returns {*}
  */
 DB.prototype.queryFirstCell = function (query, ...bindParameters) {
-  return this.connection().prepare(query).pluck(true).get(...bindParameters)
+  return this.connection()
+    .prepare(query)
+    .pluck(true)
+    .get(...bindParameters)
 }
 
 /**
@@ -299,7 +356,12 @@ DB.prototype.queryColumn = function (column, query, ...bindParameters) {
  * @param {*} bindParameters You can specify bind parameters @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#binding-parameters
  * @returns {object}
  */
-DB.prototype.queryKeyAndColumn = function (key, column, query, ...bindParameters) {
+DB.prototype.queryKeyAndColumn = function (
+  key,
+  column,
+  query,
+  ...bindParameters
+) {
   return this.query(query, ...bindParameters).reduce((cur, v) => {
     cur[v[key]] = v[column]
     return cur
@@ -362,7 +424,9 @@ DB.prototype.update = function (table, data, where, whiteList) {
       }
     }
     if (!whereStringBuilder.length) {
-      throw new Error('Where is not constructed for the update command of DB()')
+      throw new Error(
+        'Where is not constructed for the update command of DB()'
+      )
     }
     sql += whereStringBuilder.join(' AND ')
   } else {
@@ -370,10 +434,7 @@ DB.prototype.update = function (table, data, where, whiteList) {
     parameter.push(where)
   }
 
-  return (this.run(
-    sql,
-    ...parameter
-  )).changes
+  return this.run(sql, ...parameter).changes
 }
 
 /**
@@ -386,7 +447,12 @@ DB.prototype.update = function (table, data, where, whiteList) {
  * @returns {Integer} Number of changed rows
  */
 DB.prototype.updateWithBlackList = function (table, data, where, blackList) {
-  return this.update(table, data, where, createWhiteListByBlackList.bind(this)(table, blackList))
+  return this.update(
+    table,
+    data,
+    where,
+    createWhiteListByBlackList.bind(this)(table, blackList)
+  )
 }
 
 /**
@@ -398,9 +464,9 @@ DB.prototype.updateWithBlackList = function (table, data, where, blackList) {
  * @returns {Integer} Last inserted row id
  */
 DB.prototype.insert = function (table, data, whiteList) {
-  return (this.run(
+  return this.run(
     ...createInsertOrReplaceStatement('INSERT', table, data, whiteList)
-  )).lastInsertRowid
+  ).lastInsertRowid
 }
 
 /**
@@ -412,7 +478,11 @@ DB.prototype.insert = function (table, data, whiteList) {
  * @returns {Integer} Last inserted row id
  */
 DB.prototype.insertWithBlackList = function (table, data, blackList) {
-  return this.insert(table, data, createWhiteListByBlackList.bind(this)(table, blackList))
+  return this.insert(
+    table,
+    data,
+    createWhiteListByBlackList.bind(this)(table, blackList)
+  )
 }
 
 /**
@@ -424,9 +494,9 @@ DB.prototype.insertWithBlackList = function (table, data, blackList) {
  * @returns {Integer} Last inserted row id
  */
 DB.prototype.replace = function (table, data, whiteList) {
-  return (this.run(
+  return this.run(
     ...createInsertOrReplaceStatement('REPLACE', table, data, whiteList)
-  )).lastInsertRowid
+  ).lastInsertRowid
 }
 
 /**
@@ -438,7 +508,11 @@ DB.prototype.replace = function (table, data, whiteList) {
  * @returns {Integer} Last inserted row id
  */
 DB.prototype.replaceWithBlackList = function (table, data, blackList) {
-  return this.replace(table, data, createWhiteListByBlackList.bind(this)(table, blackList))
+  return this.replace(
+    table,
+    data,
+    createWhiteListByBlackList.bind(this)(table, blackList)
+  )
 }
 
 /**
@@ -468,15 +542,22 @@ function createWhiteListByBlackList (table, blackList) {
  * @param {undefined|Array} whiteList
  * @returns {Array} sql and all parameters
  */
-function createInsertOrReplaceStatement (insertOrReplace, table, data, whiteList) {
+function createInsertOrReplaceStatement (
+  insertOrReplace,
+  table,
+  data,
+  whiteList
+) {
   if (!table) {
-    throw new Error(`Table is missing for the ${insertOrReplace} command of DB()`)
+    throw new Error(
+      `Table is missing for the ${insertOrReplace} command of DB()`
+    )
   }
   if (!Array.isArray(data)) {
     data = [data]
   }
   if (typeof data[0] !== 'object') {
-    throw new Error(`data does not contain a object`)
+    throw new Error('data does not contain a object')
   }
 
   let fields = Object.keys(data[0])
@@ -486,13 +567,16 @@ function createInsertOrReplaceStatement (insertOrReplace, table, data, whiteList
   }
 
   // Build start of where query
-  let sql = `${insertOrReplace} INTO \`${table}\` (\`${fields.join('`,`')}\`) VALUES `
+  let sql = `${insertOrReplace} INTO \`${table}\` (\`${fields.join(
+    '`,`'
+  )}\`) VALUES `
   const parameter = []
   let addComma = false
 
   data.forEach(rowData => {
     addComma && (sql += ',')
-    sql += '(' + Array.from({ length: fields.length }, () => '?').join(',') + ')'
+    sql +=
+      '(' + Array.from({ length: fields.length }, () => '?').join(',') + ')'
     fields.forEach(field => parameter.push(rowData[field]))
     addComma = true
   })
@@ -504,13 +588,19 @@ function createInsertOrReplaceStatement (insertOrReplace, table, data, whiteList
  *
  * @param {Object} options
  */
-DB.prototype.migrate = function ({ force, table = 'migrations', migrationsPath = './migrations' } = {}) {
-  const location = path.resolve(appRoot, migrationsPath)
+DB.prototype.migrate = function ({
+  force,
+  table = 'migrations',
+  migrationsPath = './migrations'
+} = {}) {
+  const location = path.resolve(rootDir, migrationsPath)
 
   // Get the list of migration files, for example:
   //   { id: 1, name: 'initial', filename: '001-initial.sql' }
   //   { id: 2, name: 'feature', fielname: '002-feature.sql' }
-  const migrations = fs.readdirSync(location).map(x => x.match(/^(\d+).(.*?)\.sql$/))
+  const migrations = fs
+    .readdirSync(location)
+    .map(x => x.match(/^(\d+).(.*?)\.sql$/))
     .filter(x => x !== null)
     .map(x => ({ id: Number(x[1]), name: x[2], filename: x[0] }))
     .sort((a, b) => Math.sign(a.id - b.id))
@@ -526,12 +616,12 @@ DB.prototype.migrate = function ({ force, table = 'migrations', migrationsPath =
   migrations.map(migration => {
     const filename = path.join(location, migration.filename)
     const data = fs.readFileSync(filename, 'utf-8')
-    const [up, down] = data.split(/^--\s+?down\b/mi)
+    const [up, down] = data.split(/^--\s+?down\b/im)
     if (!down) {
       const message = `The ${migration.filename} file does not contain '-- Down' separator.`
       throw new Error(message)
     } else {
-      migration.up = up.replace(/^-- .*?$/gm, '').trim()// Remove comments
+      migration.up = up.replace(/^-- .*?$/gm, '').trim() // Remove comments
       migration.down = down.trim() // and trim whitespaces
     }
   })
@@ -552,9 +642,13 @@ DB.prototype.migrate = function ({ force, table = 'migrations', migrationsPath =
   // Undo migrations that exist only in the database but not in files,
   // also undo the last migration if the `force` option was set to `last`.
   const lastMigration = migrations[migrations.length - 1]
-  for (const migration of dbMigrations.slice().sort((a, b) => Math.sign(b.id - a.id))) {
-    if (!migrations.some(x => x.id === migration.id) ||
-        (force === 'last' && migration.id === lastMigration.id)) {
+  for (const migration of dbMigrations
+    .slice()
+    .sort((a, b) => Math.sign(b.id - a.id))) {
+    if (
+      !migrations.some(x => x.id === migration.id) ||
+      (force === 'last' && migration.id === lastMigration.id)
+    ) {
       this.exec('BEGIN')
       try {
         this.exec(migration.down)
@@ -571,7 +665,9 @@ DB.prototype.migrate = function ({ force, table = 'migrations', migrationsPath =
   }
 
   // Apply pending migrations
-  const lastMigrationId = dbMigrations.length ? dbMigrations[dbMigrations.length - 1].id : 0
+  const lastMigrationId = dbMigrations.length
+    ? dbMigrations[dbMigrations.length - 1].id
+    : 0
   for (const migration of migrations) {
     if (migration.id > lastMigrationId) {
       this.exec('BEGIN')
@@ -579,7 +675,10 @@ DB.prototype.migrate = function ({ force, table = 'migrations', migrationsPath =
         this.exec(migration.up)
         this.run(
           `INSERT INTO "${table}" (id, name, up, down) VALUES (?, ?, ?, ?)`,
-          migration.id, migration.name, migration.up, migration.down
+          migration.id,
+          migration.name,
+          migration.up,
+          migration.down
         )
         this.exec('COMMIT')
       } catch (err) {
