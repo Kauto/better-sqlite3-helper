@@ -591,32 +591,48 @@ function createInsertOrReplaceStatement (
 DB.prototype.migrate = function ({
   force,
   table = 'migrations',
-  migrationsPath = './migrations'
+  migrationsPath = './migrations',
+  migrations = undefined
 } = {}) {
-  const location = path.resolve(rootDir, migrationsPath)
+  if (!Array.isArray(migrations)) {
+    const location = path.resolve(rootDir, migrationsPath)
 
-  // Get the list of migration files, for example:
-  //   { id: 1, name: 'initial', filename: '001-initial.sql' }
-  //   { id: 2, name: 'feature', fielname: '002-feature.sql' }
-  const migrations = fs
-    .readdirSync(location)
-    .map(x => x.match(/^(\d+).(.*?)\.sql$/))
-    .filter(x => x !== null)
-    .map(x => ({ id: Number(x[1]), name: x[2], filename: x[0] }))
-    .sort((a, b) => Math.sign(a.id - b.id))
+    // Get the list of migration files, for example:
+    //   { id: 1, name: 'initial', filename: '001-initial.sql' }
+    //   { id: 2, name: 'feature', fielname: '002-feature.sql' }
+    const migrationFiles = fs
+      .readdirSync(location)
+      .map(x => x.match(/^(\d+).(.*?)\.sql$/))
+      .filter(x => x !== null)
+      .map(x => ({ id: Number(x[1]), name: x[2], filename: x[0] }))
+      .sort((a, b) => Math.sign(a.id - b.id))
 
-  if (!migrations.length) {
+    if (!migrationFiles.length) {
     // No migration files found
-    return
+      return
+    }
+
+    // Ge the list of migrations, for example:
+    //   { id: 1, name: 'initial', filename: '001-initial.sql', up: ..., down: ... }
+    //   { id: 2, name: 'feature', fielname: '002-feature.sql', up: ..., down: ... }
+    migrationFiles.map(migration => {
+      const filename = path.join(location, migration.filename)
+      migration.data = fs.readFileSync(filename, 'utf-8')
+    })
+    migrations = migrationFiles
+  } else {
+    migrations = migrations.map((migration, index) => {
+      return typeof migration === 'string' ? {
+        id: index + 1,
+        filename: index,
+        name: `array[${index}]`,
+        data: migration
+      } : migration
+    })
   }
 
-  // Ge the list of migrations, for example:
-  //   { id: 1, name: 'initial', filename: '001-initial.sql', up: ..., down: ... }
-  //   { id: 2, name: 'feature', fielname: '002-feature.sql', up: ..., down: ... }
   migrations.map(migration => {
-    const filename = path.join(location, migration.filename)
-    const data = fs.readFileSync(filename, 'utf-8')
-    const [up, down] = data.split(/^--\s+?down\b/im)
+    const [up, down] = migration.data.split(/^\s*--\s+?down\b/im)
     if (!down) {
       const message = `The ${migration.filename} file does not contain '-- Down' separator.`
       throw new Error(message)

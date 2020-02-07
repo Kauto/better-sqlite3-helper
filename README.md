@@ -233,6 +233,40 @@ The files need to be numbered. They are automatically executed before the first 
 **NOTE**: For the development environment, while working on the database schema, you may want to set
 `force: 'last'` (default `false`) that will force the migration API to rollback and re-apply the latest migration over again each time when Node.js app launches. See "Global Instance".
 
+You can also give an array of changes.
+
+```js
+const DB = require('better-sqlite3-helper')
+
+const db = new DB({
+  migrate: {
+    migrations: [
+      `-- Up
+      CREATE TABLE Setting (
+        key TEXT NOT NULL UNIQUE,
+        value BLOB,
+        type INT NOT NULL DEFAULT 0,
+        PRIMARY KEY(key)
+      );
+      CREATE INDEX IF NOT EXISTS Setting_index_key ON Setting (key);
+      
+      -- Down
+      DROP INDEX IF EXISTS Setting_index_key;
+      DROP TABLE IF EXISTS Setting;
+      `,
+      `-- Up
+      INSERT INTO Setting (key, value, type) VALUES ('test', 'now', 0);
+      INSERT INTO Setting (key, value, type) VALUES ('testtest', 'nownow', 6);
+
+      -- Down
+      DELETE FROM Setting WHERE key = 'test';
+      DELETE FROM Setting WHERE key = 'testtest';
+      `
+    ]
+  }
+})
+```
+
 ## More Documentation of better-sqlite3
 
 - [API documentation](https://github.com/JoshuaWise/better-sqlite3/wiki/API)

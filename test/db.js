@@ -39,14 +39,14 @@ describe('Database Basics', function () {
     db = new DB({
       migrate: false
     })
-    expect(db.query('SELECT ? as `1` UNION SELECT ? as `1`', 1, 2)).to.deep.equal([{ '1': 1 }, { '1': 2 }])
+    expect(db.query('SELECT ? as `1` UNION SELECT ? as `1`', 1, 2)).to.deep.equal([{ 1: 1 }, { 1: 2 }])
   })
 
   it('should return first row with queryFirstRow', function () {
     db = new DB({
       migrate: false
     })
-    expect(db.queryFirstRow('SELECT ? as `1` UNION SELECT ? as `1`', 1, 2)).to.deep.equal({ '1': 1 })
+    expect(db.queryFirstRow('SELECT ? as `1` UNION SELECT ? as `1`', 1, 2)).to.deep.equal({ 1: 1 })
     expect(db.queryFirstRow('SELECT 1 WHERE 1 = 2')).to.equal(undefined)
   })
 
@@ -83,6 +83,37 @@ describe('Database Basics', function () {
     db = new DB({
       migrate: {
         migrationsPath: './test/migrations'
+      }
+    })
+    expect(db.queryFirstCell('SELECT `value` FROM Setting WHERE `key` = ?', 'test')).to.be.equal('now')
+  })
+
+  it('should migrate array', function () {
+    db = new DB({
+      migrate: {
+        migrations: [
+          `-- Up
+          CREATE TABLE Setting (
+            key TEXT NOT NULL UNIQUE,
+            value BLOB,
+            type INT NOT NULL DEFAULT 0,
+            PRIMARY KEY(key)
+          );
+          CREATE INDEX IF NOT EXISTS Setting_index_key ON Setting (key);
+          
+          -- Down
+          DROP INDEX IF EXISTS Setting_index_key;
+          DROP TABLE IF EXISTS Setting;
+          `,
+          `-- Up
+          INSERT INTO Setting (key, value, type) VALUES ('test', 'now', 0);
+          INSERT INTO Setting (key, value, type) VALUES ('testtest', 'nownow', 6);
+
+          -- Down
+          DELETE FROM Setting WHERE key = 'test';
+          DELETE FROM Setting WHERE key = 'testtest';
+          `
+        ]
       }
     })
     expect(db.queryFirstCell('SELECT `value` FROM Setting WHERE `key` = ?', 'test')).to.be.equal('now')

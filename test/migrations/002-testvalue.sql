@@ -4,3 +4,4 @@ INSERT INTO `Setting` (`key`, `value`, `type`) VALUES ('testtest', 'nownow', 6);
 
 -- Down
 DELETE FROM `Setting` WHERE `key` = 'test';
+DELETE FROM `Setting` WHERE `key` = 'testtest';
