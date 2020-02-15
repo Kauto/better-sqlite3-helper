@@ -7,6 +7,8 @@ declare namespace BetterSqlite3Helper {
     table?: string;
     /** The path of the migration files. Default: './migrations' */
     migrationsPath?: string;
+    /** Or an array of migration strings */
+    migrations?: string[];
   };
 
   type DBOptions = {
