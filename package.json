@@ -21,7 +21,7 @@
     "better-sqlite3"
   ],
   "dependencies": {
-    "better-sqlite3": "^5.4.3",
+    "better-sqlite3": "^6.0.1",
     "mkdirp": "^1.0.3"
   },
   "devDependencies": {
@@ -32,7 +32,7 @@
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "mocha": "^7.0.1"
+    "mocha": "^7.1.0"
   },
   "optionalDependencies": {
     "app-root-path": "^3.0.0"
