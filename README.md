@@ -2,6 +2,9 @@
 
 A nodejs wrapper library for the work with [better-sqlite3](https://www.npmjs.com/package/better-sqlite3/) ("The fastest and simplest library for SQLite3 in Node.js"). It's intended for simple server-apps for nodejs and offer some new functions and a migration-system.
 
+## New in Version 3.0
+[better-sqlite3](https://www.npmjs.com/package/better-sqlite3/) Version 7 is now used. This means that the option "memory" is removed (use path `:memory:` instead - worked in version 2 too) and support for Node.js versions < 10 is dropped. For older node versions you can continue using version 2 of this library.
+
 ## New in Version 2.0
 All commands of better-sqlite3 Version 5 (like [function](https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#functionname-options-function---this) and [backup](https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#backupdestination-options---promise)) can now be used too. Commands for Version 4 are removed. In addition there is now a TypeScript Declaration File for this library.
 
@@ -53,7 +56,6 @@ const DB = require('better-sqlite3-helper');
 // The first call creates the global instance with your settings
 DB({
   path: './data/sqlite3.db', // this is the default
-  memory: false, // create a db only in memory
   readonly: false, // read only
   fileMustExist: false, // throw error if database not exists
   WAL: true, // automatically enable 'PRAGMA journal_mode = WAL'
