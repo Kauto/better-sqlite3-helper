@@ -32,16 +32,12 @@ function DB (options = {}) {
     {
       path: dbFile,
       migrate: true,
-      memory: false,
       readonly: false,
       fileMustExist: false,
       WAL: true
     },
     options
   )
-  // use memory when path is the string ':memory:'
-  this.options.memory =
-    options.memory === undefined ? options.path === ':memory:' : options.memory
 
   /**
    * @see https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md#properties
@@ -59,11 +55,6 @@ function DB (options = {}) {
   Object.defineProperty(this, 'name', {
     get: function () {
       return this.connection().name
-    }
-  })
-  Object.defineProperty(this, 'memory', {
-    get: function () {
-      return this.connection().memory
     }
   })
   Object.defineProperty(this, 'readonly', {
@@ -93,7 +84,6 @@ DB.prototype.connection = function () {
     // create path if it doesn't exists
     mkdirp.sync(path.dirname(this.options.path))
     this.db = new Database(this.options.path, {
-      memory: this.options.memory,
       readonly: this.options.readonly,
       fileMustExist: this.options.fileMustExist
     })
@@ -155,7 +145,7 @@ DB.prototype.pragma = function (string, options = {}) {
  * @returns {this}
  */
 DB.prototype.checkpoint = function (...args) {
-  this.connection().checkpoint(...args)
+  this.connection().pragma('wal_checkpoint(RESTART)')
   return this
 }
 

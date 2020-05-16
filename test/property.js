@@ -33,20 +33,6 @@ describe('Properties proxy', function () {
     expect(db.name).to.be.ok
   })
 
-  it('should proxy property "memory"', function () {
-    db = new DB({
-      migrate: false,
-      memory: false
-    })
-    expect(db.memory).to.be.false
-    db.close()
-    db = new DB({
-      migrate: false,
-      memory: true
-    })
-    expect(db.memory).to.be.true
-  })
-
   it('should proxy property "readonly"', function () {
     db = new DB({
       migrate: false,
