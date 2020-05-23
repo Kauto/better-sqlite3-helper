@@ -279,6 +279,18 @@ declare namespace BetterSqlite3Helper {
     ): number;
 
     /**
+     * Create a delete statement; create more complex one with exec yourself.
+     *
+     * @param {String} table required. Name of the table
+     * @param {String|Array|Object} where required. array with a string and the replacements for ? after that. F.e. ['id > ? && name = ?', id, name]. Or an object with key values. F.e. {id: params.id}. Or simply an ID that will be translated to ['id = ?', id]
+     * @returns {Integer} Number of changed rows
+     */
+     delete(
+       table: string,
+       where: WhereClause,
+     ): number;
+
+    /**
      * Migrates database schema to the latest version
      */
     migrate(options?: MigrationOptions): this;

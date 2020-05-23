@@ -506,6 +506,52 @@ DB.prototype.replaceWithBlackList = function (table, data, blackList) {
 }
 
 /**
+ * Create a delete statement; create more complex one with exec yourself.
+ *
+ * @param {String} table required. Name of the table
+ * @param {String|Array|Object} where required. array with a string and the replacements for ? after that. F.e. ['id > ? && name = ?', id, name]. Or an object with key values. F.e. {id: params.id}. Or simply an ID that will be translated to ['id = ?', id]
+ * @returns {Integer} Number of changed rows
+ */
+DB.prototype.delete = function (table, where) {
+  if (!where) {
+    throw new Error('Where is missing for the delete command of DB()')
+  }
+  if (!table) {
+    throw new Error('Table is missing for the delete command of DB()')
+  }
+
+  // Build start of where query
+  let sql = `DELETE FROM \`${table}\` WHERE `
+  let parameter = []
+
+  // Build where part of query
+  if (Array.isArray(where)) {
+    const [whereTerm, ...whereParameter] = where
+    sql += whereTerm
+    parameter = whereParameter
+  } else if (typeof where === 'object') {
+    const whereStringBuilder = []
+    for (const keyOfWhere in where) {
+      const value = where[keyOfWhere]
+      if (value !== undefined) {
+        parameter.push(value)
+        whereStringBuilder.push(`\`${keyOfWhere}\` = ?`)
+      }
+    }
+    if (!whereStringBuilder.length) {
+      throw new Error(
+        'Where is not constructed for the delete command of DB()'
+      )
+    }
+    sql += whereStringBuilder.join(' AND ')
+  } else {
+    sql += 'id = ?'
+    parameter.push(where)
+  }
+  return this.run(sql, ...parameter).changes
+}
+
+/**
  * Internal function to create a whitelist from a blacklist
  *
  * @param {String} table
