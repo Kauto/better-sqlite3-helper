@@ -32,9 +32,9 @@ To setup your database, create a `sql`-file named `001-init.sql` in a `migration
 ```sql
 -- Up
 CREATE TABLE `users` (
-  id INTEGER PRIMARY KEY, 
-  firstName TEXT NOT NULL, 
-  lastName TEXT NOT NULL, 
+  id INTEGER PRIMARY KEY,
+  firstName TEXT NOT NULL,
+  lastName TEXT NOT NULL,
   email TEXT NOT NULL
 );
 
@@ -46,7 +46,7 @@ And that's it!
 ## One global instance
 A normal, simple application is mostly working with only one database. To make the class management more easy, this library does the access-control for you - mainly as a singleton. (But you can create a new instance to access other databases.)
 
-The database loads lazy. Only when it's used for the first time, the database is read from the file, the migration is started and the journal-mode WAL is set. The default directory of the database is `'./data/sqlite3.db'`. 
+The database loads lazy. Only when it's used for the first time, the database is read from the file, the migration is started and the journal-mode WAL is set. The default directory of the database is `'./data/sqlite3.db'`.
 
 If you want to change the default-values, you can do this by calling the library once in the beginning of your server-code and thus setting it up:
 ##### index.js
@@ -81,27 +81,27 @@ console.log(row.firstName, row.lastName, row.email);
 This class implements shorthand methods for [better-sqlite3](https://www.npmjs.com/package/better-sqlite3/).
 
 ```js
-// shorthand for db.prepare('SELECT * FROM users').all(); 
+// shorthand for db.prepare('SELECT * FROM users').all();
 let allUsers = DB().query('SELECT * FROM users');
 // result: [{id: 1, firstName: 'a', lastName: 'b', email: 'foo@b.ar'},{},...]
 // result for no result: []
 
-// shorthand for db.prepare('SELECT * FROM users WHERE id=?').get(userId); 
+// shorthand for db.prepare('SELECT * FROM users WHERE id=?').get(userId);
 let row = DB().queryFirstRow('SELECT * FROM users WHERE id=?', userId);
 // result: {id: 1, firstName: 'a', lastName: 'b', email: 'foo@b.ar'}
 // result for no result: undefined
 
-// shorthand for db.prepare('SELECT * FROM users WHERE id=?').get(999) || {}; 
+// shorthand for db.prepare('SELECT * FROM users WHERE id=?').get(999) || {};
 let {id, firstname} = DB().queryFirstRowObject('SELECT * FROM users WHERE id=?', userId);
 // result: id = 1; firstName = 'a'
 // result for no result: id = undefined; firstName = undefined
 
-// shorthand for db.prepare('SELECT * FROM users WHERE id=?').pluck(true).get(userId); 
+// shorthand for db.prepare('SELECT * FROM users WHERE id=?').pluck(true).get(userId);
 let email = DB().queryFirstCell('SELECT email FROM users WHERE id=?', userId);
 // result: 'foo@b.ar'
 // result for no result: undefined
 
-// shorthand for db.prepare('SELECT * FROM users').all().map(e => e.email); 
+// shorthand for db.prepare('SELECT * FROM users').all().map(e => e.email);
 let emails = DB().queryColumn('email', 'SELECT email FROM users');
 // result: ['foo@b.ar', 'foo2@b.ar', ...]
 // result for no result: []
@@ -114,7 +114,7 @@ let emailsByLastName = DB().queryKeyAndColumn('lastName', 'email', 'SELECT lastN
 
 ## Insert, Update and Replace
 
-There are shorthands for `update`, `insert` and `replace`. They are intended to make programming of CRUD-Rest-API-functions easier. With a `blacklist` or a `whitelist` it's even possible to send a request's query (or body) directly into the database.
+There are shorthands for `update`, `insert`, `replace` and `delete`. They are intended to make programming of CRUD-Rest-API-functions easier. With a `blacklist` or a `whitelist` it's even possible to send a request's query (or body) directly into the database.
 
 ### Update
 ```js
@@ -167,6 +167,12 @@ DB().replace('users', req.body, ['lastName', 'firstName'])
 DB().replaceWithBlackList('users', req.body, ['id', 'email']) // or insertWithBlackList
 ```
 
+### Delete
+```js
+//delete the user with an id of 4
+DB().delete('users', {id: 4})
+```
+
 ### Try and catch
 
 If you want to put invalid values into the database, the functions will throw an error. So don't forget to surround the functions with a `try-catch`. Here is an example for an express-server:
@@ -200,7 +206,7 @@ router.patch('/user/:id', bodyParser.json(), function (req, res, next) {
 
 ## Migrations
 
-The migration in this library mimics the migration system of the excellent [sqlite](https://www.npmjs.com/package/sqlite) by Kriasoft. 
+The migration in this library mimics the migration system of the excellent [sqlite](https://www.npmjs.com/package/sqlite) by Kriasoft.
 
 To use this feature you have to create a `migrations`-directory in your root. Inside you create `sql`-files that are separated in a up- and a down-part:
 
@@ -251,7 +257,7 @@ const db = new DB({
         PRIMARY KEY(key)
       );
       CREATE INDEX IF NOT EXISTS Setting_index_key ON Setting (key);
-      
+
       -- Down
       DROP INDEX IF EXISTS Setting_index_key;
       DROP TABLE IF EXISTS Setting;
