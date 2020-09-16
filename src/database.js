@@ -697,13 +697,13 @@ DB.prototype.migrate = function ({
   for (const migration of dbMigrations
     .slice()
     .sort((a, b) => Math.sign(b.id - a.id))) {
+    const isForceLastMigration = (force === 'last' && migration.id === lastMigration.id)
     if (
-      !migrations.some(x => x.id === migration.id) ||
-      (force === 'last' && migration.id === lastMigration.id)
+      !migrations.some(x => x.id === migration.id) || isForceLastMigration
     ) {
       this.exec('BEGIN')
       try {
-        this.exec(migration.down)
+        this.exec(isForceLastMigration ? lastMigration.down : migration.down)
         this.run(`DELETE FROM "${table}" WHERE id = ?`, migration.id)
         this.exec('COMMIT')
         dbMigrations = dbMigrations.filter(x => x.id !== migration.id)
