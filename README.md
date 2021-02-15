@@ -2,6 +2,8 @@
 
 A nodejs wrapper library for the work with [better-sqlite3](https://www.npmjs.com/package/better-sqlite3/) ("The fastest and simplest library for SQLite3 in Node.js"). It's intended for simple server-apps for nodejs and offer some new functions and a migration-system.
 
+<a href='https://ko-fi.com/kautode' target='_blank'><img height='35' style='border:0px;height:46px;' src='https://az743702.vo.msecnd.net/cdn/kofi3.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' />
+  
 ## New in Version 3.0
 [better-sqlite3](https://www.npmjs.com/package/better-sqlite3/) Version 7 is now used. This means that the option "memory" is removed (use path `:memory:` instead - worked in version 2 too) and support for Node.js versions < 10 is dropped. For older node versions you can continue using version 2 of this library.
 
