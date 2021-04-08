@@ -68,7 +68,7 @@ function DB (options = {}) {
   Object.defineProperty(this, 'transaction', {
     get: function () {
       let conn = this.connection();
-      return () => Function.prototype.apply(conn, conn.transaction);
+      return () => Function.prototype.apply(conn, conn.transaction, arguments);
     }
   })
 }
