@@ -67,7 +67,8 @@ function DB (options = {}) {
    */
   Object.defineProperty(this, 'transaction', {
     get: function () {
-      return this.connection().transaction
+      let conn = this.connection();
+      return conn.transaction.bind(conn);
     }
   })
 }
