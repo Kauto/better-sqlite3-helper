@@ -6,12 +6,15 @@ const mkdirp = require('mkdirp')
 let rootDir = '.'
 try {
   rootDir = require('app-root-path').path
-} catch (e) {
+} catch (e) {}
+
+if (rootDir === '.') {
   try {
     const electron = require('electron')
     rootDir = (electron.app || electron.remote.app).getPath('userData')
   } catch (e) {}
 }
+
 
 const dbFile = path.resolve(rootDir, './data/sqlite3.db')
 
