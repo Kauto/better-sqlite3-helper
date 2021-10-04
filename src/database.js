@@ -3,7 +3,7 @@ const path = require('path')
 const fs = require('fs')
 const mkdirp = require('mkdirp')
 
-let rootDir = '.'
+let rootDir = process.env.APP_ROOT || '.'
 try {
   rootDir = require('app-root-path').path
 } catch (e) {}
