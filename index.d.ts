@@ -195,7 +195,7 @@ declare namespace BetterSqlite3Helper {
      *
      * @param {String} table required. Name of the table
      * @param {Object} data A Object of data to set. Key is the name of the column. Value 'undefined' is filtered
-     * @param {String|Array|Object} where required. array with a string and the replacements for ? after that. F.e. ['id > ? && name = ?', id, name]. Or an object with key values. F.e. {id: params.id}. Or simply an ID that will be translated to ['id = ?', id]
+     * @param {String|Array|Object} where required. array with a string and the replacements for ? after that. F.e. ['id > ? && name = ?', id, name]. Or an object with key values. F.e. {id: params.id}.
      * @param {undefined|Array} whiteList optional List of columns that can only be updated with "data"
      * @returns {Integer} Number of changed rows
      */
@@ -211,13 +211,13 @@ declare namespace BetterSqlite3Helper {
      *
      * @param {String} table Name of the table
      * @param {Object} data a Object of data to set. Key is the name of the column. Value 'undefined' is filtered
-     * @param {String|Array|Object} where required. array with a string and the replacements for ? after that. F.e. ['id > ? && name = ?', id, name]. Or an object with key values. F.e. {id: params.id}. Or simply an ID that will be translated to ['id = ?', id]
+     * @param {String|Array|Object} where required. array with a string and the replacements for ? after that. F.e. ['id > ? && name = ?', id, name]. Or an object with key values. F.e. {id: params.id}.
      * @param {undefined|Array} whiteBlackList optional List of columns that can not be updated with "data" (blacklist)
      * @returns {Integer} Number of changed rows
      */
-    updateWithBlackList(
+    updateWithBlackList<RowData = DataObject>(
       table: string,
-      data: DataObject,
+      data: Partial<RowData>,
       where: WhereClause,
       blackList?: string[]
     ): number;
@@ -230,9 +230,9 @@ declare namespace BetterSqlite3Helper {
      * @param {undefined|Array} whiteList optional List of columns that only can be updated with "data"
      * @returns {Integer} Last inserted row id
      */
-    insert(
+    insert<RowData = DataObject>(
       table: string,
-      data: DataObject | DataObject[],
+      data: Partial<RowData> | Partial<RowData>[],
       whiteList?: string[]
     ): number;
 
@@ -244,9 +244,9 @@ declare namespace BetterSqlite3Helper {
      * @param {undefined|Array} whiteBlackList optional List of columns that can not be updated with "data" (blacklist)
      * @returns {Integer} Last inserted row id
      */
-    insertWithBlackList(
+    insertWithBlackList<RowData = DataObject>(
       table: string,
-      data: DataObject | DataObject[],
+      data: Partial<RowData> | Partial<RowData>[],
       blackList?: string[]
     ): number;
 
@@ -258,9 +258,9 @@ declare namespace BetterSqlite3Helper {
      * @param {undefined|Array} whiteList optional List of columns that only can be updated with "data"
      * @returns {Integer} Last inserted row id
      */
-    replace(
+    replace<RowData = DataObject>(
       table: string,
-      data: DataObject | DataObject[],
+      data: Partial<RowData> | Partial<RowData>[],
       whiteList?: string[]
     ): number;
 
@@ -272,9 +272,9 @@ declare namespace BetterSqlite3Helper {
      * @param {undefined|Array} whiteBlackList optional List of columns that can not be updated with "data" (blacklist)
      * @returns {Integer} Last inserted row id
      */
-    replaceWithBlackList(
+    replaceWithBlackList<RowData = DataObject>(
       table: string,
-      data: DataObject | DataObject[],
+      data: Partial<RowData> | Partial<RowData>[],
       blackList?: string[]
     ): number;
 
@@ -282,7 +282,7 @@ declare namespace BetterSqlite3Helper {
      * Create a delete statement; create more complex one with exec yourself.
      *
      * @param {String} table required. Name of the table
-     * @param {String|Array|Object} where required. array with a string and the replacements for ? after that. F.e. ['id > ? && name = ?', id, name]. Or an object with key values. F.e. {id: params.id}. Or simply an ID that will be translated to ['id = ?', id]
+     * @param {String|Array|Object} where required. array with a string and the replacements for ? after that. F.e. ['id > ? && name = ?', id, name]. Or an object with key values. F.e. {id: params.id}.
      * @returns {Integer} Number of changed rows
      */
      delete(
