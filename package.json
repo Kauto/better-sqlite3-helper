@@ -34,6 +34,14 @@
     "eslint-plugin-promise": "^5.1.1",
     "mocha": "^9.1.3"
   },
+  "peerDependencies": {
+    "@types/better-sqlite3": "^7.4.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/better-sqlite3": {
+      "optional": true
+    }
+  },
   "optionalDependencies": {
     "app-root-path": "^3.0.0"
   }
