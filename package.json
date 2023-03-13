@@ -21,8 +21,8 @@
     "better-sqlite3"
   ],
   "dependencies": {
-    "better-sqlite3": "^7.1.2",
-    "mkdirp": "^1.0.4"
+    "better-sqlite3": "^8.2.0",
+    "mkdirp": "^2.1.5"
   },
   "devDependencies": {
     "chai": "^4.2.0",
