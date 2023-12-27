@@ -7,7 +7,10 @@
     "test": "cross-env NODE_ENV=test ./node_modules/mocha/bin/_mocha --ui bdd --recursive ./test"
   },
   "author": "Markus Madeja",
-  "repository": "Kauto/better-sqlite3-helper",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kauto/better-sqlite3-helper.git"
+  },
   "homepage": "http://intergenies.com/programs/nodejs/better-sqlite3-helper",
   "license": "MIT",
   "keywords": [
