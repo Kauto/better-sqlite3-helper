@@ -1,7 +1,6 @@
 const Database = require('better-sqlite3')
 const path = require('path')
 const fs = require('fs')
-const mkdirp = require('mkdirp')
 
 let rootDir = process.env.APP_ROOT || '.'
 try {
@@ -86,7 +85,7 @@ DB.prototype.connection = function () {
   }
   try {
     // create path if it doesn't exists
-    mkdirp.sync(path.dirname(this.options.path))
+    fs.mkdirSync(path.dirname(this.options.path), { recursive: true })
     this.db = new Database(this.options.path, {
       readonly: this.options.readonly,
       fileMustExist: this.options.fileMustExist
